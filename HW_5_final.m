@@ -10,7 +10,7 @@ d_oil = diff(oil);
 d_indpro = diff(indpro);
 d_avgwh = diff(avgwh);
 
-% GRAPH ORIGINAL VALUES
+% GRAPH SERIES
 
 startdate        = datenum('01-01-1959','dd-mm-yyyy');
 enddate          = datenum('01-08-2024','dd-mm-yyyy');
@@ -18,7 +18,7 @@ graphenddate     = datenum('01-08-2024','dd-mm-yyyy');
 
 date = linspace(startdate+1,enddate,length(oil))';
 
-% Graph the series
+% Graph original values
 figure(1)
 subplot(1,3,1)
 plot(date, oil);
@@ -38,7 +38,7 @@ xlim([startdate, graphenddate]);
 datetick('x','yyyy','keeplimits');
 title('Average weekly hours - Manufacturing');
 
-% STATIONARY GRAPHS - DIFFs
+% Graph Stationary - DIFFs
 
 date = date(2:end);   % drop the first date so length matches diff()
 
@@ -61,7 +61,7 @@ xlim([startdate, graphenddate]);
 datetick('x','yyyy','keeplimits');
 title('Avg weekly hours - Manufacturing');
 
-%% GRAPH IMFs - FIRST ORDERING
+%% IMFs - FIRST ORDERING
 
 % Define the VAR. Estimate model, IRFs and error bands
 % By default, the identification is a Cholesky decomposition
@@ -75,13 +75,13 @@ N = 3;
 Nlags = 4;
 Nhorizon = 49;
 
-X = [d_indpro d_oil d_avgwh];
+X = [d_oil d_indpro d_avgwh];
 Mdl = varm(N,Nlags);
 [EstMdl,EstSE,LogL,E] = estimate(Mdl,X);
 summarize(EstMdl)
 [Response,Lower,Upper] = irf(EstMdl,"E",E,"NumPaths",500,"Confidence",0.9,"NumObs",Nhorizon);
 
-Names = ["IPI", "Oil Price" ,  "Avg W.H."];
+Names = ["Oil Price" , "IPI",  "Avg W.H."];
 
 % Graph IRFs
 figure;
@@ -129,4 +129,5 @@ title(titletext)
 grid on
 hold off 
   end 
+
 end
